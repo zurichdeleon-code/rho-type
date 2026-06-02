@@ -553,6 +553,62 @@ a, button, .opt, .size-opt, .splash-cta, [onclick] { cursor: none; }
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* ── PRE-RESULTS CINEMATIC ───────────────────── */
+#pre-results-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #080808;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Courier New', monospace;
+  pointer-events: none;
+}
+.pr-stage {
+  text-align: center;
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  padding: 0 40px;
+}
+.pr-line {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  letter-spacing: 0.04em;
+}
+.pr-line.visible { opacity: 1; }
+.pr-line.hide    { opacity: 0; }
+.pr-archetypes {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+.pr-arch-word {
+  opacity: 0;
+  font-size: clamp(18px, 3vw, 26px);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(240,237,228,0.5);
+  transition: opacity 0.35s ease;
+}
+.pr-arch-word.visible { opacity: 1; }
+.pr-arch-word.hide    { opacity: 0; }
+.pr-overlay-fade {
+  position: absolute; inset: 0;
+  background: #080808;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.pr-overlay-fade.visible { opacity: 1; }
+
 /* ── WINDOW EXPAND PROMPT ────────────────────── */
 #window-prompt {
   align-items: center;
@@ -2380,7 +2436,64 @@ function initSpectrum_UNUSED(scoreMap) {
 
   specDraw();
 }
+function playPreResults(persona, callback) {
+  const el = document.createElement('div');
+  el.id = 'pre-results-overlay';
+  el.innerHTML = `
+    <div class="pr-stage" id="pr-stage">
+      <div class="pr-line" id="pr-l1" style="font-size:clamp(13px,2vw,17px);letter-spacing:0.32em;text-transform:uppercase;color:rgba(240,237,228,0.35);">This summer</div>
+      <div class="pr-line" id="pr-l2" style="font-size:clamp(28px,5vw,52px);font-weight:400;text-transform:uppercase;letter-spacing:-0.01em;color:#F0EDE4;font-family:'Courier New',monospace;">Rho brings<br>together</div>
+      <div class="pr-archetypes" id="pr-archs">
+        <span class="pr-arch-word" id="pr-a1">Makers</span>
+        <span class="pr-arch-word" id="pr-a2">Thinkers</span>
+        <span class="pr-arch-word" id="pr-a3">Students</span>
+        <span class="pr-arch-word" id="pr-a4">Connectors</span>
+        <span class="pr-arch-word" id="pr-a5">Wanderers</span>
+      </div>
+      <div class="pr-line" id="pr-l3" style="font-size:clamp(28px,5vw,52px);font-weight:400;text-transform:uppercase;letter-spacing:-0.01em;color:#F0EDE4;font-family:'Courier New',monospace;">We are all<br>builders.</div>
+      <div class="pr-line" id="pr-l4" style="font-size:clamp(14px,2.2vw,20px);letter-spacing:0.18em;text-transform:uppercase;color:rgba(240,237,228,0.55);line-height:1.7;">Do what's hard this summer.<br>Shape what's next.</div>
+      <div class="pr-line" id="pr-l5" style="font-size:clamp(32px,6vw,64px);font-style:italic;font-weight:100;letter-spacing:0.04em;color:#00EBC0;font-family:'Courier New',monospace;">${persona}</div>
+    </div>
+    <div class="pr-overlay-fade" id="pr-fade"></div>
+  `;
+  document.body.appendChild(el);
+
+  const show = id => document.getElementById(id) && document.getElementById(id).classList.add('visible');
+  const hide = id => document.getElementById(id) && document.getElementById(id).classList.add('hide');
+
+  const seq = [
+    // [delay, fn]
+    [400,  () => show('pr-l1')],
+    [1800, () => hide('pr-l1')],
+    [2400, () => show('pr-l2')],
+    [3800, () => hide('pr-l2')],
+    [4200, () => show('pr-archs')],
+    [4200, () => show('pr-a1')],
+    [4600, () => show('pr-a2')],
+    [4950, () => show('pr-a3')],
+    [5250, () => show('pr-a4')],
+    [5500, () => show('pr-a5')],
+    [6100, () => ['pr-a1','pr-a2','pr-a3','pr-a4','pr-a5'].forEach(hide)],
+    [6500, () => show('pr-l3')],
+    [7900, () => hide('pr-l3')],
+    [8300, () => show('pr-l4')],
+    [9200, () => hide('pr-l4')],
+    [9500, () => show('pr-l5')],
+    [10200,() => show('pr-fade')],
+    [11000,() => { el.remove(); callback(); }],
+  ];
+
+  seq.forEach(([t, fn]) => setTimeout(fn, t));
+}
+
 function showResults() {
+  const sorted_pre = Object.entries(scores).sort((a,b) => b[1]-a[1]);
+  const winner_pre = sorted_pre[0][0];
+  const persona_pre = Acts[winner_pre] ? Acts[winner_pre].persona : '';
+  playPreResults(persona_pre, _showResults);
+}
+
+function _showResults() {
   document.getElementById('quiz').classList.remove('active');
   document.getElementById('results').classList.add('active');
   const sorted = Object.entries(scores).sort((a,b) => b[1]-a[1]);
