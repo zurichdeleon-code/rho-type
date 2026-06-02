@@ -316,18 +316,51 @@ a, button, .opt, .size-opt, .splash-cta, [onclick] { cursor: none; }
   padding: 40px;
   display: flex;
   gap: 32px;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 24px;
 }
+.r-hero-row {
+  display: flex;
+  align-items: center;
+  gap: 52px;
+  margin-bottom: 0;
+}
+.r-hero-row .r-headline {
+  margin-bottom: 0;
+}
+.r-hero-row .r-icon-spin {
+  margin-top: -40px;
+}
 .r-icon {
-  width: 68px; height: 68px;
   border-radius: 50%;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(240,237,228,0.14);
+  background: rgba(240,237,228,0.03);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-size: 26px;
+  overflow: hidden;
+}
+.r-icon-spin {
+  width: 260px; height: 260px;
+  animation: coinSpin 9s linear infinite;
+}
+.r-icon-spin svg {
+  width: 164px;
+  height: 164px;
+  display: block;
+}
+.r-icon-static {
+  width: 72px; height: 72px;
+}
+.r-icon-static svg {
+  width: 46px;
+  height: 46px;
+  display: block;
+}
+@keyframes coinSpin {
+  from { transform: perspective(700px) rotateY(0deg); }
+  to   { transform: perspective(700px) rotateY(360deg); }
 }
 .r-activity-label {
   font-size: 10px;
@@ -975,26 +1008,21 @@ body.speed-mode #edge-pulse {
   display: flex; align-items: center; justify-content: center;
   font-size: 22px; flex-shrink: 0;
 }
-.r-also-persona {
-  font-size: 10px;
-  letter-spacing: 0.28em;
+.r-also-archetype-label {
+  font-size: 9px;
+  letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: rgba(240,237,228,0.32);
-  margin-bottom: 5px;
-}
-.r-also-name {
-  font-family: var(--font);
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--off-white);
+  color: rgba(240,237,228,0.25);
   margin-bottom: 8px;
-  line-height: 1.2;
 }
-.r-also-desc {
-  font-size: 13px;
-  line-height: 1.85;
-  color: rgba(240,237,228,0.45);
-  max-width: 460px;
+.r-also-persona {
+  font-family: var(--font);
+  font-size: clamp(24px, 4vw, 36px);
+  font-style: italic;
+  font-weight: 100;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  line-height: 1.1;
 }
 .r-activity-match {
   font-size: 10px;
@@ -1311,12 +1339,17 @@ body.speed-mode #edge-pulse {
   </div>
   <div class="results-body">
     <div class="r-eyebrow label">Rho type — 2026</div>
-    <div class="r-headline">You're<br><em id="r-persona">—</em></div>
+    <div class="r-hero-row">
+      <div>
+        <div class="r-headline">You're<br><em id="r-persona">—</em></div>
+      </div>
+      <div class="r-icon r-icon-spin" id="r-icon-hero">—</div>
+    </div>
     <div class="r-match-confirm">Your Summer of Rho experience has been matched.</div>
     <div class="r-invite-line">You'll receive your invite before June 5th.</div>
     <!-- Main archetype card with event match -->
     <div class="r-card">
-      <div class="r-icon" id="r-icon">—</div>
+      <div class="r-icon r-icon-static" id="r-icon">—</div>
       <div class="r-detail">
         <div class="r-activity-match">Your matched experience</div>
         <div class="r-activity-match-name" id="r-activity-name">—</div>
@@ -1337,13 +1370,11 @@ body.speed-mode #edge-pulse {
     <!-- Also you -->
     <div class="r-also-section" id="r-also-section" onclick="switchToSecondary()">
       <span class="r-also-select-hint">Select this instead →</span>
-      <div class="r-section-label">Also you</div>
       <div class="r-also-card">
         <div class="r-also-icon" id="r-also-icon">—</div>
         <div>
+          <div class="r-also-archetype-label">Also you</div>
           <div class="r-also-persona" id="r-also-persona">—</div>
-          <div class="r-also-name" id="r-also-name">—</div>
-          <div class="r-also-desc" id="r-also-desc">—</div>
         </div>
       </div>
     </div>
@@ -1353,14 +1384,14 @@ body.speed-mode #edge-pulse {
 
 
 <script>
-const TOTAL=8;
+const TOTAL=12;
 
 const Qs=[
   {type:"personality",text:"Free Friday night. Best case scenario:",opts:[
     {l:"A",t:"Something spontaneous that becomes a story by Sunday",a:"floral"},
     {l:"B",t:"A show or film I've been waiting for, drinks after",a:"cinema"},
     {l:"C",t:"Dancing somewhere until it's suddenly 2am",a:"dance"},
-    {l:"D",t:"A long dinner that turns into a longer night",a:"drinks"}
+    {l:"D",t:"A long walk somewhere I haven't been before",a:"garden"}
   ]},
   {type:"personality",text:"After a great night out, you're still thinking about:",opts:[
     {l:"A",t:"Something someone said that shifted how you saw it",a:"broadway"},
@@ -1380,10 +1411,29 @@ const Qs=[
     {l:"C",t:"One person who really knows what they're doing, leading it",a:"cooking"},
     {l:"D",t:"No script — whatever happens is the point",a:"floral"}
   ]},
+  {type:"personality",text:"You're handed an hour with no plan and nothing urgent. You:",opts:[
+    {l:"A",t:"Wander somewhere and see what you notice",a:"garden"},
+    {l:"B",t:"Already have something in mind — perfect timing",a:"cinema"},
+    {l:"C",t:"Text someone and see if they're around",a:"drinks"},
+    {l:"D",t:"Start making or building something",a:"pottery"}
+  ]},
+  {type:"personality",text:"When you're genuinely into something, you:",opts:[
+    {l:"A",t:"Move fast and figure out the details as you go",a:"floral"},
+    {l:"B",t:"Slow down and pay close attention to each part",a:"omakase"},
+    {l:"C",t:"Think about how it fits into a bigger picture",a:"broadway"},
+    {l:"D",t:"Want to bring someone else into it immediately",a:"dance"}
+  ]},
+  {type:"personality",text:"The thing most people miss that you almost always catch:",opts:[
+    {l:"A",t:"The detail someone put real effort into",a:"pottery"},
+    {l:"B",t:"When the energy in a room shifts",a:"concert"},
+    {l:"C",t:"Who in the group hasn't spoken yet",a:"drinks"},
+    {l:"D",t:"The most direct path through something",a:"cinema"}
+  ]},
   {type:"scale",text:"I'd rather do something I'll remember than something I'm comfortable with.",a:"floral"},
   {type:"scale",text:"I notice things in a room that most people walk right past.",a:"concert"},
   {type:"scale",text:"I'm usually the one keeping the energy going in a group.",a:"dance"},
-  {type:"scale",text:"I take real pleasure in doing things well — even small things.",a:"pottery"}
+  {type:"scale",text:"I take real pleasure in doing things well — even small things.",a:"pottery"},
+  {type:"scale",text:"I'm just as happy alone as I am with people.",a:"garden"}
 ];
 
 const RhoValues = {
@@ -1395,14 +1445,27 @@ const RhoValues = {
   allin:     'All In, All Accountable'
 };
 
+const ArchSVG = {
+  floral: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg"><g transform="translate(40,40)"><ellipse cx="0" cy="-19" rx="6" ry="14" fill="#F0EDE4"/><ellipse cx="0" cy="-19" rx="6" ry="14" fill="#F0EDE4" transform="rotate(60)"/><ellipse cx="0" cy="-19" rx="6" ry="14" fill="#F0EDE4" transform="rotate(120)"/><ellipse cx="0" cy="-19" rx="6" ry="14" fill="#F0EDE4" transform="rotate(180)"/><ellipse cx="0" cy="-19" rx="6" ry="14" fill="#F0EDE4" transform="rotate(240)"/><ellipse cx="0" cy="-19" rx="6" ry="14" fill="#F0EDE4" transform="rotate(300)"/><circle cx="0" cy="0" r="10" fill="#00EBC0"/><circle cx="0" cy="0" r="4" fill="#080808"/></g></svg>`,
+  pottery: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M34,18 Q18,28 18,46 Q18,62 40,66 Q62,62 62,46 Q62,28 46,18Z" fill="#F0EDE4"/><rect x="26" y="12" width="28" height="8" rx="3" fill="#00EBC0"/><ellipse cx="40" cy="46" rx="14" ry="5" fill="rgba(8,8,8,0.25)"/><path d="M18,30 Q8,34 10,46 Q12,54 20,52" stroke="#F0EDE4" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M62,30 Q72,34 70,46 Q68,54 60,52" stroke="#F0EDE4" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`,
+  broadway: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="30" cy="35" rx="19" ry="23" fill="#F0EDE4"/><circle cx="23" cy="29" r="2.5" fill="#080808"/><circle cx="37" cy="29" r="2.5" fill="#080808"/><path d="M22,39 Q30,31 38,39" stroke="#080808" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="50" cy="45" rx="19" ry="23" fill="#00EBC0"/><circle cx="43" cy="39" r="2.5" fill="#080808"/><circle cx="57" cy="39" r="2.5" fill="#080808"/><path d="M42,51 Q50,59 58,51" stroke="#080808" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`,
+  cooking: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="40" cy="34" rx="23" ry="27" fill="#F0EDE4"/><rect x="16" y="54" width="48" height="10" rx="2" fill="#00EBC0"/><path d="M30,18 Q28,10 30,5" stroke="#00EBC0" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M40,16 Q38,8 40,3" stroke="#00EBC0" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M50,18 Q48,10 50,5" stroke="#00EBC0" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg>`,
+  omakase: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="40" cy="52" rx="28" ry="14" fill="#F0EDE4"/><ellipse cx="40" cy="40" rx="22" ry="11" fill="#00EBC0"/><rect x="26" y="47" width="28" height="6" rx="1" fill="#080808" opacity="0.5"/><line x1="12" y1="18" x2="36" y2="58" stroke="#F0EDE4" stroke-width="2" stroke-linecap="round" opacity="0.55"/><line x1="16" y1="16" x2="40" y2="56" stroke="#F0EDE4" stroke-width="2" stroke-linecap="round" opacity="0.55"/></svg>`,
+  drinks: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14,16 L40,54 L66,16Z" fill="#F0EDE4" opacity="0.85"/><path d="M22,24 L40,52 L58,24Z" fill="#00EBC0" opacity="0.7"/><line x1="40" y1="54" x2="40" y2="70" stroke="#F0EDE4" stroke-width="3" stroke-linecap="round"/><line x1="26" y1="70" x2="54" y2="70" stroke="#F0EDE4" stroke-width="3" stroke-linecap="round"/><circle cx="40" cy="36" r="5" fill="#080808"/><line x1="40" y1="22" x2="40" y2="36" stroke="#F0EDE4" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+  dance: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="44" cy="14" r="8" fill="#F0EDE4"/><path d="M44,22 Q52,34 40,44 Q28,54 34,68" stroke="#F0EDE4" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M44,32 Q62,26 68,16" stroke="#00EBC0" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M42,38 Q24,38 14,28" stroke="#F0EDE4" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.6"/><path d="M34,68 Q26,76 18,76" stroke="#F0EDE4" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.6"/><path d="M34,68 Q44,76 52,76" stroke="#00EBC0" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>`,
+  cinema: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="28" width="60" height="44" rx="3" fill="#F0EDE4"/><rect x="10" y="12" width="60" height="18" rx="3" fill="#222"/><line x1="10" y1="30" x2="28" y2="12" stroke="#F0EDE4" stroke-width="4.5"/><line x1="26" y1="30" x2="44" y2="12" stroke="#F0EDE4" stroke-width="4.5"/><line x1="42" y1="30" x2="60" y2="12" stroke="#F0EDE4" stroke-width="4.5"/><line x1="10" y1="30" x2="70" y2="30" stroke="#00EBC0" stroke-width="2"/><circle cx="26" cy="52" r="4" fill="#080808"/><circle cx="40" cy="52" r="4" fill="#080808"/><circle cx="54" cy="52" r="4" fill="#080808"/></svg>`,
+  garden: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40,70 Q10,52 14,24 Q26,8 40,10 Q54,8 66,24 Q70,52 40,70Z" fill="#F0EDE4"/><line x1="40" y1="70" x2="40" y2="12" stroke="#00EBC0" stroke-width="2" stroke-linecap="round"/><line x1="40" y1="30" x2="22" y2="24" stroke="#00EBC0" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/><line x1="40" y1="40" x2="18" y2="38" stroke="#00EBC0" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/><line x1="40" y1="52" x2="24" y2="54" stroke="#00EBC0" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/><line x1="40" y1="30" x2="58" y2="24" stroke="#00EBC0" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/><line x1="40" y1="40" x2="62" y2="38" stroke="#00EBC0" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/><line x1="40" y1="52" x2="56" y2="54" stroke="#00EBC0" stroke-width="1.5" stroke-linecap="round" opacity="0.8"/></svg>`,
+  concert: `<svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="8" width="64" height="5" rx="2" fill="#F0EDE4"/><path d="M8,13 Q14,26 11,42 Q9,54 13,68" stroke="#F0EDE4" stroke-width="10" stroke-linecap="round" fill="none"/><path d="M72,13 Q66,26 69,42 Q71,54 67,68" stroke="#F0EDE4" stroke-width="10" stroke-linecap="round" fill="none"/><path d="M40,13 L27,67 L53,67Z" fill="#00EBC0" opacity="0.22"/><rect x="8" y="68" width="64" height="4" rx="1" fill="#00EBC0"/></svg>`
+};
+
 const Acts = {
-  floral:  { persona:"The One Who Shows Up",  icon:"💐", name:"Floral Arrangement Course",           desc:"You're the person who makes any room better just by walking in — and now you'll literally be the one arranging it. You bring energy, you don't overthink it, and you'll leave with the best arrangement in the class without having tried to.",    values:['allin','trust','dohard'],    rhoNote:"You go all in and bring everyone with you — that's what All In, All Accountable looks like in practice. You Default to Trust before you have reason to, and you're not afraid to Do What's Hard when the moment calls for it. The room is always better when you're in it." },
+  floral:  { persona:"The Catalyst",  icon:"💐", name:"Floral Arrangement Course",           desc:"You're the person who makes any room better just by walking in — and now you'll literally be the one arranging it. You bring energy, you don't overthink it, and you'll leave with the best arrangement in the class without having tried to.",    values:['allin','trust','dohard'],    rhoNote:"You go all in and bring everyone with you — that's what All In, All Accountable looks like in practice. You Default to Trust before you have reason to, and you're not afraid to Do What's Hard when the moment calls for it. The room is always better when you're in it." },
   pottery: { persona:"The Maker",             icon:"🏺", name:"Pottery Class",                       desc:"You do your best work when your hands are involved. You're patient, intentional, and quietly competitive with yourself in the best way. You'll leave with something real — and probably the best piece in the room.",                    values:['excellence','allin','longterm'], rhoNote:"Excellence in Every Detail isn't just a value for you — it's a way of working. You're patient, intentional, and quietly competitive with yourself. You're All In on the craft itself, not the applause. And you play Long-Term Games: you know that patient, compounding work is what becomes something real." },
   broadway:{ persona:"The Thinker",           icon:"🎭", name:"Broadway + Guided Discussion",        desc:"You're the one who brings the question that reframes everything. You love shared experiences that give you something to chew on — the show is the starting point, the conversation after is the whole point.",                          values:['longterm','customers','trust'],  rhoNote:"You play Long-Term Games with Long-Term People — you're building understanding, not just collecting experiences. You hold the room to a high standard of presence and bring the question that reframes everything. That's Default to Trust working in both directions: given freely, expected in return." },
   cooking: { persona:"The Student",           icon:"👨‍🍳", name:"Cooking Class with a Chef",           desc:"You're someone who actually pays attention. You want to walk away knowing something — a technique, a ratio, a trick — not just having had fun. You'll be the one at dinner next month saying 'I learned this from a chef.'",          values:['excellence','dohard','longterm'],rhoNote:"You want to walk away knowing something real — a technique, a principle, something that compounds. That's Long-Term Games, Long-Term People. You bring Excellence in Every Detail: you actually pay attention when others coast. And you're not afraid to Do What's Hard to earn the knowledge." },
   omakase: { persona:"The Connoisseur",       icon:"🍣", name:"Make Your Own Omakase",               desc:"You have taste and you trust it. You notice things other people miss, and you eat with real intention. This isn't just dinner for you — it's an experience, and you'll savor every second of it.",                                    values:['excellence','customers','longterm'],rhoNote:"You notice what others walk past — that's Excellence in Every Detail as a way of being. You put the experience first at every touchpoint, which is Customers > Company > Team made personal. And you play Long-Term Games: slow, deliberate, savored. Nothing is wasted on you." },
   drinks:  { persona:"The Host",              icon:"🍹", name:"Drink Mixing Class",                  desc:"Everyone ends up in your orbit eventually. You're social by nature, generous by habit, and you know the best moments happen in the margins — after the event, over one more drink. You'll leave with a signature cocktail and a group of new friends.", values:['trust','customers','allin'],  rhoNote:"Everyone ends up in your orbit because you Default to Trust before it's been earned — and that's a real gift. You put Customers > Company > Team into practice socially: the people in the room are always the priority. And you're All In, fully accountable for the energy and warmth you create." },
-  dance:   { persona:"The Connector",         icon:"💃", name:"Salsa Dancing Class",                 desc:"You've never met a stranger. You're the person who remembers everyone's name, fills the silence with something real, and leaves every room warmer than you found it. The dance floor is just your natural habitat.",                    values:['trust','allin','customers'],  rhoNote:"You Default to Trust with everyone, immediately — you've never met a stranger. You leave every room warmer than you found it, which is Customers > Company > Team made real. And you're All In: the energy you bring is total, unconditional, and contagious in the best possible way." },
+  dance:   { persona:"The Connector",         icon:"🥂", name:"Dinner & Drinks",                 desc:"You've never met a stranger. You're the person who remembers everyone's name, fills the silence with something real, and leaves every room warmer than you found it. The dance floor is just your natural habitat.",                    values:['trust','allin','customers'],  rhoNote:"You Default to Trust with everyone, immediately — you've never met a stranger. You leave every room warmer than you found it, which is Customers > Company > Team made real. And you're All In: the energy you bring is total, unconditional, and contagious in the best possible way." },
   cinema:  { persona:"The Scene-Setter",      icon:"🎬", name:"Metrograph Cinema + Pre-show Drinks", desc:"You know that the best nights aren't just about the main event — they're about everything around it. A curated film, the right bar beforehand, the conversation that follows. You don't just attend experiences, you orchestrate them.", values:['excellence','longterm','dohard'],rhoNote:"You know that Excellence in Every Detail is what separates a good night from a great one — and you architect the entire experience around it. You're playing Long-Term Games: you think about what will be remembered, not just what's convenient. And you're not afraid to Do What's Hard to get it exactly right." },
   garden:  { persona:"The Wanderer",          icon:"🌿", name:"Brooklyn Botanic Garden",             desc:"You move through the world at your own pace and notice things most people walk right past. You're not in a hurry, and you don't need to be loud to be felt. An afternoon of slow beauty and good company is, for you, close to perfect.", values:['excellence','longterm','trust'], rhoNote:"You notice what everyone else walks past — that's Excellence in Every Detail as a way of moving through the world. You move at your own pace and Default to Trust in the process. You're drawn to Long-Term Games: slow beauty, real connection, things that take time and attention to fully appreciate." },
   concert: { persona:"The Cultured",          icon:"🎪", name:"Off-Broadway at The Public",          desc:"You want theater that actually means something. The Public does the work that ends up mattering — raw, intimate, and almost always better than whatever's running uptown. You're the type who appreciates that the best seat in the house is often the smallest room.", values:['excellence','dohard','longterm'],rhoNote:"You want the work that actually means something — raw, intimate, better than whatever's easy. That's Excellence in Every Detail and Do What's Hard, Shape What's Next working together. You're not interested in the obvious choice. Long-Term Games, Long-Term People: you know the best seat is often the smallest room." }
@@ -1416,8 +1479,8 @@ let _signals = { window: null, typing: null, bug: null };
 function beginQuiz() {
   _introLaunched = true;
   document.getElementById('intro').style.display = 'none';
-  document.getElementById('window-prompt').classList.add('active');
-  runWindowPrompt();
+  document.getElementById('quiz').classList.add('active');
+  render();
 }
 
 function runWindowPrompt() {
@@ -2129,6 +2192,194 @@ function launchSplash() {
 
 let _matchedAct = null;
 
+function initSpectrum_UNUSED(scoreMap) {
+  const container = document.getElementById('r-spectrum');
+  if (!container) return;
+  if (_specRAF) { cancelAnimationFrame(_specRAF); _specRAF = null; }
+  _specT = 0;
+  container.innerHTML = '';
+
+  const sc = document.createElement('canvas');
+  sc.style.display = 'block'; sc.style.width = '100%';
+  container.appendChild(sc);
+
+  const ctx = sc.getContext('2d');
+  const DPR = window.devicePixelRatio || 1;
+
+  const SPEC_KEYS = ['floral','pottery','broadway','cooking','omakase','drinks','dance','cinema','garden','concert'];
+  const SPEC_LBLS = ['FLO','POT','BWY','COK','OMA','DRK','DNC','CIN','GDN','CON'];
+  const scoreArr  = SPEC_KEYS.map(k => scoreMap[k] || 0);
+  const maxSc     = Math.max(...scoreArr, 1);
+  const winnerIdx = scoreArr.indexOf(Math.max(...scoreArr));
+  const runnerScore = Math.max(...scoreArr.filter((_,i) => i !== winnerIdx), 0);
+  const runnerIdx = scoreArr.indexOf(runnerScore);
+
+  const LABEL_W = 32, ROW_H = 32, ROW_GAP = 8, N_ROWS = SPEC_KEYS.length;
+  const TOTAL_H = N_ROWS * ROW_H + (N_ROWS - 1) * ROW_GAP;
+
+  const CW = container.clientWidth;
+  const CH = TOTAL_H;
+
+  sc.width = CW * DPR; sc.height = CH * DPR;
+  sc.style.height = CH + 'px';
+  ctx.scale(DPR, DPR);
+
+  const oc = document.createElement('canvas');
+  oc.width = CW * DPR; oc.height = CH * DPR;
+  const octx = oc.getContext('2d');
+  octx.scale(DPR, DPR);
+
+  const PSCALE = 3;
+  const tiny = document.createElement('canvas');
+  tiny.width = Math.ceil(CW / PSCALE);
+  tiny.height = Math.ceil(CH / PSCALE);
+  const tctx = tiny.getContext('2d');
+
+  const VIZ_W = CW - LABEL_W;
+  const N_COLS = Math.floor(VIZ_W / 1.0);
+  const COL_W  = VIZ_W / N_COLS;
+  const BAR_W  = COL_W * 5;
+
+  function heat(v) {
+    v = Math.max(0, Math.min(1, v));
+    const stops = [
+      [0.00,[0,0,0,0]],[0.15,[0,30,40,0.5]],[0.32,[0,190,160,0.78]],
+      [0.50,[0,235,120,0.88]],[0.65,[60,255,20,0.92]],[0.78,[200,255,0,0.96]],
+      [0.88,[255,160,0,1.0]],[0.94,[255,60,0,1.0]],[1.00,[255,10,10,1.0]],
+    ];
+    for (let i = 0; i < stops.length - 1; i++) {
+      const [t0,c0] = stops[i], [t1,c1] = stops[i+1];
+      if (v >= t0 && v <= t1) {
+        const f = (v-t0)/(t1-t0);
+        return [
+          Math.round(c0[0]+f*(c1[0]-c0[0])), Math.round(c0[1]+f*(c1[1]-c0[1])),
+          Math.round(c0[2]+f*(c1[2]-c0[2])), +(c0[3]+f*(c1[3]-c0[3])).toFixed(3),
+        ];
+      }
+    }
+    return [255,10,10,1];
+  }
+
+  const rng = seed => { let s=seed*7919+3; return ()=>{ s=(s*16807+seed*31)%2147483647; return (s-1)/2147483646; }; };
+
+  const rowMeta = scoreArr.map((score, c) => {
+    const r = rng(c*113+29);
+    const env = score / maxSc;
+    const waves = [
+      [2+r()*3,   r()*6.28, 0.08+r()*0.10, 0.28],
+      [5+r()*6,   r()*6.28, 0.14+r()*0.18, 0.22],
+      [12+r()*10, r()*6.28, 0.22+r()*0.28, 0.17],
+      [28+r()*18, r()*6.28, 0.35+r()*0.40, 0.13],
+      [60+r()*35, r()*6.28, 0.50+r()*0.55, 0.09],
+      [120+r()*60,r()*6.28, 0.65+r()*0.65, 0.07],
+      [220+r()*80,r()*6.28, 0.80+r()*0.75, 0.04],
+    ];
+    const noise = Array.from({length: N_COLS}, () => r()*0.22 - 0.11);
+    return { env, waves, noise };
+  });
+
+  function rawAmp(c, col) {
+    const m = rowMeta[c]; const x = col / N_COLS;
+    let v = 0;
+    m.waves.forEach(([freq,phase,speed,weight]) => {
+      v += weight * Math.sin(x * freq * Math.PI * 2 + phase + _specT * speed);
+    });
+    v += m.noise[col];
+    v = (v + 1) * 0.5;
+    v = 0.10 + v * 0.90;
+    v = Math.max(0.05, Math.min(1, v));
+    return Math.pow(v, 1.6);
+  }
+
+  function smooth(arr, sigma) {
+    const out = new Float32Array(arr.length);
+    const k = Math.ceil(sigma * 3); const kernel = []; let ksum = 0;
+    for (let i = -k; i <= k; i++) { const w = Math.exp(-i*i/(2*sigma*sigma)); kernel.push(w); ksum += w; }
+    for (let i = 0; i < arr.length; i++) {
+      let s = 0;
+      kernel.forEach((w,j) => { const idx=i+j-k; if(idx>=0&&idx<arr.length) s+=arr[idx]*w; });
+      out[i] = s / ksum;
+    }
+    return out;
+  }
+
+  function specDraw() {
+    const ampCache = rowMeta.map((m, c) =>
+      smooth(Float32Array.from({length: N_COLS}, (_, col) => rawAmp(c, col)), 0.7)
+    );
+
+    octx.clearRect(0, 0, CW, CH);
+    for (let c = 0; c < N_ROWS; c++) {
+      const rowY = c * (ROW_H + ROW_GAP), rowMidY = rowY + ROW_H / 2;
+      const isWin = c === winnerIdx, isRun = c === runnerIdx;
+      const env = rowMeta[c].env;
+      octx.save(); octx.beginPath(); octx.rect(LABEL_W, rowY, VIZ_W, ROW_H); octx.clip();
+      for (let col = 0; col < N_COLS; col++) {
+        const raw = ampCache[c][col];
+        const dispAmp = raw * env;
+        const scaledAmp = isWin ? dispAmp : isRun ? dispAmp*0.75 : dispAmp*0.52;
+        if (scaledAmp < 0.04) continue;
+        const [r,g,b,a] = heat(scaledAmp);
+        const barH = Math.max(1, scaledAmp * ROW_H * 1.1);
+        const barX = LABEL_W + col * COL_W - BAR_W / 2;
+        const barY = rowMidY - barH / 2;
+        const gr = octx.createLinearGradient(0, barY, 0, barY + barH);
+        const eA = (a*0.05).toFixed(3), mA = (a*0.22).toFixed(3);
+        gr.addColorStop(0,`rgba(${r},${g},${b},${eA})`); gr.addColorStop(0.2,`rgba(${r},${g},${b},${mA})`);
+        gr.addColorStop(0.5,`rgba(${r},${g},${b},${mA})`); gr.addColorStop(0.8,`rgba(${r},${g},${b},${mA})`);
+        gr.addColorStop(1,`rgba(${r},${g},${b},${eA})`);
+        octx.fillStyle = gr; octx.fillRect(barX, barY, BAR_W, barH);
+      }
+      octx.restore();
+    }
+
+    tctx.clearRect(0, 0, tiny.width, tiny.height);
+    tctx.drawImage(oc, 0, 0, tiny.width, tiny.height);
+    ctx.clearRect(0, 0, CW, CH);
+    ctx.filter = 'blur(0.8px)'; ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(tiny, 0, 0, CW, CH);
+    ctx.imageSmoothingEnabled = true; ctx.filter = 'none';
+
+    [winnerIdx, runnerIdx].forEach((c, pass) => {
+      const rowY = c*(ROW_H+ROW_GAP), rowMidY = rowY+ROW_H/2, env = rowMeta[c].env;
+      ctx.save(); ctx.beginPath(); ctx.rect(LABEL_W, rowY, VIZ_W, ROW_H); ctx.clip();
+      ctx.globalCompositeOperation = 'screen';
+      for (let col = 0; col < N_COLS; col++) {
+        const dispAmp = ampCache[c][col] * env * (pass===0?1.0:0.72);
+        if (dispAmp < 0.42) continue;
+        const [r,g,b] = heat(dispAmp);
+        const peakH = Math.max(1, (dispAmp-0.42)*ROW_H*1.8);
+        ctx.fillStyle = `rgba(${r},${g},${b},${((dispAmp-0.42)*0.55).toFixed(3)})`;
+        ctx.fillRect(LABEL_W+col*COL_W, rowMidY-peakH/2, COL_W, peakH);
+      }
+      ctx.restore();
+    });
+    ctx.globalCompositeOperation = 'source-over';
+
+    ctx.globalAlpha = 0.06; ctx.fillStyle = '#F0EDE4';
+    for (let gx = LABEL_W; gx < CW; gx += 5)
+      for (let gy = 0; gy < CH; gy += 5) ctx.fillRect(gx, gy, 1, 1);
+    ctx.globalAlpha = 1;
+
+    for (let c = 0; c < N_ROWS-1; c++) {
+      const y = c*(ROW_H+ROW_GAP)+ROW_H+ROW_GAP/2;
+      ctx.fillStyle='rgba(240,237,228,0.04)'; ctx.fillRect(LABEL_W, y, VIZ_W, 1);
+    }
+
+    ctx.textAlign = 'right'; ctx.font = '7px Courier New';
+    for (let c = 0; c < N_ROWS; c++) {
+      const rowMidY = c*(ROW_H+ROW_GAP)+ROW_H/2+2.5;
+      const env = rowMeta[c].env;
+      ctx.fillStyle = c===winnerIdx ? '#00EBC0' : c===runnerIdx ? 'rgba(240,237,228,0.5)' : `rgba(240,237,228,${0.08+env*0.14})`;
+      ctx.fillText(SPEC_LBLS[c], LABEL_W-5, rowMidY);
+    }
+
+    _specT += 0.012;
+    _specRAF = requestAnimationFrame(specDraw);
+  }
+
+  specDraw();
+}
 function showResults() {
   document.getElementById('quiz').classList.remove('active');
   document.getElementById('results').classList.add('active');
@@ -2139,7 +2390,8 @@ function showResults() {
 
   // Main card
   document.getElementById('r-persona').textContent      = _matchedAct.persona;
-  document.getElementById('r-icon').textContent         = _matchedAct.icon;
+  document.getElementById('r-icon-hero').innerHTML      = ArchSVG[winner] || _matchedAct.icon;
+  document.getElementById('r-icon').innerHTML           = ArchSVG[winner] || _matchedAct.icon;
   document.getElementById('r-activity-name').textContent = _matchedAct.name;
   document.getElementById('r-desc').textContent         = _matchedAct.desc;
   document.getElementById('prog').style.width           = '100%';
@@ -2177,8 +2429,6 @@ function showResults() {
   if (runner) {
     document.getElementById('r-also-icon').textContent    = runner.icon;
     document.getElementById('r-also-persona').textContent = runner.persona;
-    document.getElementById('r-also-name').textContent    = runner.name;
-    document.getElementById('r-also-desc').textContent    = runner.desc;
   }
 }
 
@@ -2192,7 +2442,8 @@ function switchToSecondary() {
 
   // Swap headline + primary card
   document.getElementById('r-persona').textContent       = act.persona;
-  document.getElementById('r-icon').textContent          = act.icon;
+  document.getElementById('r-icon-hero').innerHTML       = ArchSVG[runnerKey] || act.icon;
+  document.getElementById('r-icon').innerHTML             = ArchSVG[runnerKey] || act.icon;
   document.getElementById('r-activity-name').textContent = act.name;
   document.getElementById('r-desc').textContent          = act.desc;
 
@@ -2230,8 +2481,6 @@ function switchToSecondary() {
   if (orig) {
     document.getElementById('r-also-icon').textContent    = orig.icon;
     document.getElementById('r-also-persona').textContent = orig.persona;
-    document.getElementById('r-also-name').textContent    = orig.name;
-    document.getElementById('r-also-desc').textContent    = orig.desc;
   }
 }
 
