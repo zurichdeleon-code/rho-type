@@ -2478,13 +2478,14 @@ function playPreResults(persona, callback) {
   el.style.transition = 'opacity 0.4s ease';
   el.innerHTML = `
     <div id="pr-scanline"></div>
-    <div id="pr-slot"></div>
+    <div id="pr-slot"><span id="pr-slot-the">THE </span><span id="pr-slot-word"></span></div>
   `;
   document.body.appendChild(el);
   // Fade the overlay in before the slot starts
   requestAnimationFrame(() => requestAnimationFrame(() => { el.style.opacity = '1'; }));
 
-  const slot = el.querySelector('#pr-slot');
+  const slot     = el.querySelector('#pr-slot');
+  const slotWord = el.querySelector('#pr-slot-word');
   const fade = el.querySelector('#pr-fade');
 
   // Pre-build spin sequence: ends on winner
@@ -2509,19 +2510,22 @@ function playPreResults(persona, callback) {
   let delay = SPIN_OFFSET;
   seq.forEach((name, i) => {
     setTimeout(() => {
-      slot.textContent = name.toUpperCase();
+      // Strip leading "The " — only spin the word after it
+      const word = name.replace(/^The\s+/i, '').toUpperCase();
+      slotWord.textContent = word;
       const isLast = i === seq.length - 1;
-      slot.style.color = isLast ? '#00EBC0' : (i % 6 === 0 ? '#00EBC0' : '#F0EDE4');
-      slot.style.opacity = isLast ? '1' : (0.6 + Math.random() * 0.4).toFixed(2);
+      const wordColor = isLast ? '#00EBC0' : (i % 6 === 0 ? '#00EBC0' : '#F0EDE4');
+      slotWord.style.color = wordColor;
+      slotWord.style.opacity = isLast ? '1' : (0.6 + Math.random() * 0.4).toFixed(2);
 
       if (isLast) {
         // Lock flash: briefly scale up then settle
-        slot.style.transition = 'transform 0.15s cubic-bezier(0.16,1,0.3,1), color 0.1s';
-        slot.style.transform = 'scale(1.08)';
-        setTimeout(() => { slot.style.transform = 'scale(1)'; }, 150);
+        slotWord.style.transition = 'transform 0.15s cubic-bezier(0.16,1,0.3,1), color 0.1s';
+        slotWord.style.transform = 'scale(1.08)';
+        setTimeout(() => { slotWord.style.transform = 'scale(1)'; }, 150);
       } else {
-        slot.style.transition = 'none';
-        slot.style.transform = 'scale(1)';
+        slotWord.style.transition = 'none';
+        slotWord.style.transform = 'scale(1)';
       }
     }, delay);
     delay += intervals[i];
