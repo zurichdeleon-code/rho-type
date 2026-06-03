@@ -595,16 +595,26 @@ a, button, .opt, .size-opt, .splash-cta, [onclick] { cursor: none; }
 }
 #pr-slot {
   width: 100%; text-align: center;
-  font-size: clamp(24px, 4.5vw, 56px);
+  display: flex; align-items: baseline; justify-content: center;
+  gap: 0.28em;
+  font-family: 'VT323', monospace;
+  font-size: clamp(48px, 7vw, 96px);
   font-weight: 400;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #F0EDE4;
-  line-height: 1.25;
+  line-height: 1.1;
   word-break: break-word;
   will-change: transform, opacity;
 }
-#pr-slot.teal { color: #00EBC0; }
+#pr-slot-the {
+  color: #F0EDE4;
+  flex-shrink: 0;
+}
+#pr-slot-word {
+  color: #F0EDE4;
+  transition: color 0.1s;
+}
+#pr-slot.teal #pr-slot-word { color: #00EBC0; }
 #pr-manifesto {
   position: absolute;
   width: 100%; text-align: center;
@@ -2864,8 +2874,9 @@ function _tickSound(isLast) {
 }
 
 function playPreResults(persona, callback) {
-  // Spin through all archetype names, land on the winner
-  const NAMES = Object.values(Acts).map(a => a.persona);
+  // Strip "The " prefix — spin only the archetype word, keep "THE" static
+  const NAMES = Object.values(Acts).map(a => a.persona.replace(/^The\s+/i, ''));
+  const winnerWord = persona.replace(/^The\s+/i, '');
 
   // Hide the quiz immediately so it cannot bleed through the overlay fade-in
   document.getElementById('quiz').classList.remove('active');
@@ -2877,8 +2888,11 @@ function playPreResults(persona, callback) {
   el.innerHTML = `
     <div id="pr-scanline"></div>
     <div id="pr-ticker-wrap">
-      <div id="pr-label">IDENTIFYING YOUR ARCHETYPE</div>
-      <div id="pr-slot"><span id="pr-slot-word"></span></div>
+      <div id="pr-label">YOUR ARCHETYPE</div>
+      <div id="pr-slot">
+        <span id="pr-slot-the">THE</span>
+        <span id="pr-slot-word"></span>
+      </div>
     </div>
   `;
   document.body.appendChild(el);
@@ -2887,33 +2901,30 @@ function playPreResults(persona, callback) {
 
   const slotWord = el.querySelector('#pr-slot-word');
 
-  // Pre-build spin sequence: ends on winner
-  // Total ~42 spins. Last entry = persona.
+  // Pre-build spin sequence: ends on winner word
   const TOTAL = 42;
   const seq = [];
   for (let i = 0; i < TOTAL - 1; i++) {
     seq.push(NAMES[i % NAMES.length]);
   }
-  seq.push(persona); // always land here
+  seq.push(winnerWord); // always land here
 
   // Timing: fast start (45ms), decelerate to 320ms by end
-  // easing: cubic ease-in on interval
   const intervals = seq.map((_, i) => {
     const t = i / (TOTAL - 1);
-    const eased = t * t * t; // cubic — slow to start decelerating, then really slows
+    const eased = t * t * t;
     return Math.round(45 + eased * 500);
   });
 
   // Schedule each spin — start after fade-in settles (400ms)
   const SPIN_OFFSET = 450;
   let delay = SPIN_OFFSET;
-  seq.forEach((name, i) => {
+  seq.forEach((word, i) => {
     setTimeout(() => {
-      const word = name.toUpperCase();
-      slotWord.textContent = word;
+      slotWord.textContent = word.toUpperCase();
       const isLast = i === seq.length - 1;
-      const wordColor = isLast ? '#00EBC0' : '#F0EDE4';
-      slotWord.style.color = wordColor;
+      // Spinning words: white. Winner: teal lock-in.
+      slotWord.style.color = isLast ? '#00EBC0' : '#F0EDE4';
       _tickSound(isLast);
       slotWord.style.opacity = isLast ? '1' : (0.6 + Math.random() * 0.4).toFixed(2);
 
