@@ -72,13 +72,16 @@ a, button, .opt, .size-opt, .splash-cta, [onclick] { cursor: none; }
 .screen { display: none; min-height: 100vh; }
 .screen.active { display: flex; flex-direction: column; }
 
-/* Non-intro screens sit above the dot-canvas (z-index 9997) so particles
-   never bleed through card backgrounds. Intro is excluded intentionally. */
+/* Non-intro screens use position:fixed to fully cover the dot-canvas (z-index 9997).
+   position:relative only covered content height — fixed covers the full viewport.
+   Intro is excluded so particles still animate on the splash screen. */
 #splash.active, #window-prompt.active, #window-question.active,
 #typing-challenge.active, #notif-question.active, #hidden-tab.active,
 #quiz.active, #confirm-archetype.active, #activity-list.active,
 #experience-select.active, #calendar-screen.active, #results.active {
-  position: relative;
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
   z-index: 9998;
   background: var(--black);
 }
