@@ -72,9 +72,7 @@ a, button, .opt, .size-opt, .splash-cta, [onclick] { cursor: none; }
 .screen { display: none; min-height: 100vh; }
 .screen.active { display: flex; flex-direction: column; }
 
-/* Non-intro screens use position:fixed to fully cover the dot-canvas (z-index 9997).
-   position:relative only covered content height — fixed covers the full viewport.
-   Intro is excluded so particles still animate on the splash screen. */
+/* All non-intro screens are fixed so they sit above the dot-canvas (z-index 9997). */
 #splash.active, #window-prompt.active, #window-question.active,
 #typing-challenge.active, #notif-question.active, #hidden-tab.active,
 #quiz.active, #confirm-archetype.active, #activity-list.active,
@@ -83,6 +81,19 @@ a, button, .opt, .size-opt, .splash-cta, [onclick] { cursor: none; }
   inset: 0;
   overflow-y: auto;
   z-index: 9998;
+}
+
+/* Quiz screen is transparent — particles show through the empty space,
+   but individual answer cards keep their own solid backgrounds. */
+#quiz.active {
+  background: transparent;
+}
+
+/* All other post-intro screens get a solid background to block the canvas. */
+#experience-select.active, #calendar-screen.active, #results.active,
+#confirm-archetype.active, #activity-list.active,
+#splash.active, #window-prompt.active, #window-question.active,
+#typing-challenge.active, #notif-question.active, #hidden-tab.active {
   background: var(--black);
 }
 
